@@ -21,7 +21,9 @@ namespace StargateAPI.Controllers
         {
             try
             {
-                var result = await _mediator.Send(new GetPersonByName()
+                //var result = await _mediator.Send(new GetPersonByName()
+                //FIXED: Wrong handler we want to return person info AND duties list 
+                var result = await _mediator.Send(new GetAstronautDutiesByName()
                 {
                     Name = name
                 });

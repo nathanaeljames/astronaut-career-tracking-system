@@ -1,9 +1,31 @@
+# .NET Build Artifacts
 bin/
 obj/
+*.dll
+*.pdb
+*.cache
+*.deps.json
+*.runtimeconfig.json
+
+# Database files
 *.db
 *.db-shm
 *.db-wal
-node_modules/
-dist/
+
+# User-specific files
 .vs/
 .vscode/
+*.user
+*.suo
+
+# macOS
+.DS_Store
+
+# Angular
+node_modules/
+dist/
+.angular/
+
+# Environment files
+*.env
+appsettings.Development.json

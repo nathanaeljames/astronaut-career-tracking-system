@@ -32,7 +32,9 @@ namespace StargateAPI.Business.Queries
                           WHERE a.Name = @Name";
             var person = await _context.Connection.QueryFirstOrDefaultAsync<PersonAstronaut>(query, new { Name = request.Name });
 
-            result.Person = person.FirstOrDefault();
+            //result.Person = person.FirstOrDefault();
+            // .FirstOrDefault() no longer needed - QueryFirstOrDefaultAsync returns single object
+            result.Person = person;
 
             return result;
         }
