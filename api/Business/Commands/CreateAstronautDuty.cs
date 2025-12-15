@@ -53,13 +53,18 @@ namespace StargateAPI.Business.Commands
         public async Task<CreateAstronautDutyResult> Handle(CreateAstronautDuty request, CancellationToken cancellationToken)
         {
 
-            var query = $"SELECT * FROM [Person] WHERE \'{request.Name}\' = Name";
+            //var query = $"SELECT * FROM [Person] WHERE \'{request.Name}\' = Name";
+            //var person = await _context.Connection.QueryFirstOrDefaultAsync<Person>(query);
+            // FIXED: String interpolation opens us up to SQL injection attacks. Use parameterized queries with anonymous objects instead
+            // Dapper automatically sanitizes and escapes parameters
+            var query = "SELECT * FROM [Person] WHERE Name = @Name";
+            var person = await _context.Connection.QueryFirstOrDefaultAsync<Person>(query, new { Name = request.Name });
 
-            var person = await _context.Connection.QueryFirstOrDefaultAsync<Person>(query);
-
-            query = $"SELECT * FROM [AstronautDetail] WHERE {person.Id} = PersonId";
-
-            var astronautDetail = await _context.Connection.QueryFirstOrDefaultAsync<AstronautDetail>(query);
+            //query = $"SELECT * FROM [AstronautDetail] WHERE {person.Id} = PersonId";
+            //var astronautDetail = await _context.Connection.QueryFirstOrDefaultAsync<AstronautDetail>(query);
+            // FIXED: Use parameterized query
+            query = "SELECT * FROM [AstronautDetail] WHERE PersonId = @PersonId";
+            var astronautDetail = await _context.Connection.QueryFirstOrDefaultAsync<AstronautDetail>(query, new { PersonId = person.Id });
 
             if (astronautDetail == null)
             {
@@ -70,7 +75,9 @@ namespace StargateAPI.Business.Commands
                 astronautDetail.CareerStartDate = request.DutyStartDate.Date;
                 if (request.DutyTitle == "RETIRED")
                 {
-                    astronautDetail.CareerEndDate = request.DutyStartDate.Date;
+                    //astronautDetail.CareerEndDate = request.DutyStartDate.Date;
+                    // FIXED: Career end date should be day BEFORE retirement (Rule 7) - already correct in else clause
+                    astronautDetail.CareerEndDate = request.DutyStartDate.AddDays(-1).Date;
                 }
 
                 await _context.AstronautDetails.AddAsync(astronautDetail);
@@ -87,9 +94,11 @@ namespace StargateAPI.Business.Commands
                 _context.AstronautDetails.Update(astronautDetail);
             }
 
-            query = $"SELECT * FROM [AstronautDuty] WHERE {person.Id} = PersonId Order By DutyStartDate Desc";
-
-            var astronautDuty = await _context.Connection.QueryFirstOrDefaultAsync<AstronautDuty>(query);
+            //query = $"SELECT * FROM [AstronautDuty] WHERE {person.Id} = PersonId Order By DutyStartDate Desc";
+            //var astronautDuty = await _context.Connection.QueryFirstOrDefaultAsync<AstronautDuty>(query);
+            // FIXED: Use parameterized query
+            query = "SELECT * FROM [AstronautDuty] WHERE PersonId = @PersonId ORDER BY DutyStartDate DESC";
+            var astronautDuty = await _context.Connection.QueryFirstOrDefaultAsync<AstronautDuty>(query, new { PersonId = person.Id });
 
             if (astronautDuty != null)
             {
