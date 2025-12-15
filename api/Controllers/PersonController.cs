@@ -95,9 +95,10 @@ namespace StargateAPI.Controllers
             {
                 var result = await _mediator.Send(new UpdatePerson()
                 {
-                    Name = name,
-                    NewName = newName
+                    CurrentName = name,      // From URL parameter
+                    NewName = newName        // From request body
                 });
+
                 return this.GetResponse(result);
             }
             catch (Exception ex)
