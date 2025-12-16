@@ -12,6 +12,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<StargateContext>(options => 
     options.UseSqlite(builder.Configuration.GetConnectionString("StarbaseApiDatabase")));
+// ADDED logging service - one instance per HTTP request
+builder.Services.AddScoped<ILoggingService, DatabaseLoggingService>();
 
 builder.Services.AddMediatR(cfg =>
 {
