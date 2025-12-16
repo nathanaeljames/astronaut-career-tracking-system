@@ -3,6 +3,7 @@ using MediatR;
 using MediatR.Pipeline;
 using Microsoft.EntityFrameworkCore;
 using StargateAPI.Business.Data;
+using StargateAPI.Business.Services;
 using StargateAPI.Controllers;
 using System.Net;
 
@@ -30,13 +31,29 @@ namespace StargateAPI.Business.Commands
 
         public Task Process(CreateAstronautDuty request, CancellationToken cancellationToken)
         {
+            // VALIDATION 1: Check required fields
+            if (string.IsNullOrWhiteSpace(request.Name))
+            {
+                throw new BadHttpRequestException("Person name cannot be null or empty");
+            }
+            if (string.IsNullOrWhiteSpace(request.Rank))
+            {
+                throw new BadHttpRequestException("Rank cannot be null or empty");
+            }
+            if (string.IsNullOrWhiteSpace(request.DutyTitle))
+            {
+                throw new BadHttpRequestException("Duty title cannot be null or empty");
+            }
+
+            // VALIDATION 2: Check if person exists
             var person = _context.People.AsNoTracking().FirstOrDefault(z => z.Name == request.Name);
+            //if (person is null) throw new BadHttpRequestException("Bad Request");
+            if (person is null) throw new BadHttpRequestException($"Person with name '{request.Name}' not found");
 
-            if (person is null) throw new BadHttpRequestException("Bad Request");
-
+            // VALIDATION 3: Check for duplicate duty
             var verifyNoPreviousDuty = _context.AstronautDuties.FirstOrDefault(z => z.DutyTitle == request.DutyTitle && z.DutyStartDate == request.DutyStartDate);
-
-            if (verifyNoPreviousDuty is not null) throw new BadHttpRequestException("Bad Request");
+            //if (verifyNoPreviousDuty is not null) throw new BadHttpRequestException("Bad Request");
+            if (verifyNoPreviousDuty is not null) throw new BadHttpRequestException($"Duty '{request.DutyTitle}' with start date {request.DutyStartDate:yyyy-MM-dd} already exists");
 
             return Task.CompletedTask;
         }
@@ -45,10 +62,12 @@ namespace StargateAPI.Business.Commands
     public class CreateAstronautDutyHandler : IRequestHandler<CreateAstronautDuty, CreateAstronautDutyResult>
     {
         private readonly StargateContext _context;
+        private readonly ILoggingService _loggingService; //ADDED logging service
 
-        public CreateAstronautDutyHandler(StargateContext context)
+        public CreateAstronautDutyHandler(StargateContext context, ILoggingService loggingService)
         {
             _context = context;
+            _loggingService = loggingService; //ADDED logging service
         }
         public async Task<CreateAstronautDutyResult> Handle(CreateAstronautDuty request, CancellationToken cancellationToken)
         {
@@ -118,6 +137,13 @@ namespace StargateAPI.Business.Commands
             await _context.AstronautDuties.AddAsync(newAstronautDuty);
 
             await _context.SaveChangesAsync();
+
+            // ADDED log success
+            await _loggingService.LogSuccess(
+                action: "CreateAstronautDuty",
+                message: $"Astronaut duty '{request.DutyTitle}' created for '{request.Name}' starting {request.DutyStartDate:yyyy-MM-dd}",
+                personName: request.Name
+            );
 
             return new CreateAstronautDutyResult()
             {

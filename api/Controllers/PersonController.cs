@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using StargateAPI.Business.Commands;
 using StargateAPI.Business.Queries;
+using StargateAPI.Business.Services;
 using System.Net;
 
 namespace StargateAPI.Controllers
@@ -12,9 +13,11 @@ namespace StargateAPI.Controllers
     public class PersonController : ControllerBase
     {
         private readonly IMediator _mediator;
-        public PersonController(IMediator mediator)
+        private readonly ILoggingService _loggingService; // ADDED logging service
+        public PersonController(IMediator mediator, ILoggingService loggingService)
         {
             _mediator = mediator;
+            _loggingService = loggingService; //ADDED logging service
         }
 
         [HttpGet("")]
@@ -31,6 +34,12 @@ namespace StargateAPI.Controllers
             }
             catch (Exception ex)
             {
+                // ADDED log exception first
+                await _loggingService.LogException(
+                    action: "GetPeople",
+                    ex: ex
+                );
+
                 return this.GetResponse(new BaseResponse()
                 {
                     Message = ex.Message,
@@ -54,6 +63,13 @@ namespace StargateAPI.Controllers
             }
             catch (Exception ex)
             {
+                // ADDED log exception first
+                await _loggingService.LogException(
+                    action: "GetPersonByName",
+                    ex: ex,
+                    personName: name
+                );
+
                 return this.GetResponse(new BaseResponse()
                 {
                     Message = ex.Message,
@@ -75,8 +91,32 @@ namespace StargateAPI.Controllers
 
                 return this.GetResponse(result);
             }
+            // ADDED 400 catch for expected errors
+            catch (BadHttpRequestException ex)
+            {
+                // This is a validation error (expected) - use LogError, not LogException
+                await _loggingService.LogError(
+                    action: "CreatePerson",
+                    message: ex.Message,
+                    personName: name
+                );
+
+                return this.GetResponse(new BaseResponse()
+                {
+                    Message = ex.Message,
+                    Success = false,
+                    ResponseCode = ex.StatusCode  // Use the exception's status code (400)
+                });
+            }
             catch (Exception ex)
             {
+                // ADDED log exception first
+                await _loggingService.LogException(
+                    action: "CreatePerson",
+                    ex: ex,
+                    personName: name
+                );
+
                 return this.GetResponse(new BaseResponse()
                 {
                     Message = ex.Message,
@@ -101,8 +141,31 @@ namespace StargateAPI.Controllers
 
                 return this.GetResponse(result);
             }
+            // ADDED 400 catch for expected errors
+            catch (BadHttpRequestException ex)
+            {
+                await _loggingService.LogError(
+                    action: "UpdatePerson",
+                    message: ex.Message,
+                    personName: name
+                );
+
+                return this.GetResponse(new BaseResponse()
+                {
+                    Message = ex.Message,
+                    Success = false,
+                    ResponseCode = ex.StatusCode
+                });
+            }
             catch (Exception ex)
             {
+                // ADDED log exception first
+                await _loggingService.LogException(
+                    action: "UpdatePerson",
+                    ex: ex,
+                    personName: name
+                );
+
                 return this.GetResponse(new BaseResponse()
                 {
                     Message = ex.Message,

@@ -16,6 +16,9 @@ namespace StargateAPI.Business.Services
         // Log successful operation (Level: Info)
         public async Task LogSuccess(string action, string message, string? personName = null)
         {
+            // Clear tracked changes from failed operations - prevents cascade error
+            _context.ChangeTracker.Clear();
+
             var log = new ProcessLog
             {
                 Timestamp = DateTime.UtcNow,
@@ -33,6 +36,9 @@ namespace StargateAPI.Business.Services
         //Log business logic error (Level: Error)
         public async Task LogError(string action, string message, string? personName = null)
         {
+            // Clear tracked changes from failed operations - prevents cascade error
+            _context.ChangeTracker.Clear();
+
             var log = new ProcessLog
             {
                 Timestamp = DateTime.UtcNow,
@@ -50,6 +56,9 @@ namespace StargateAPI.Business.Services
         // Log unexpected exception (Level: Exception)
         public async Task LogException(string action, Exception ex, string? personName = null)
         {
+            // Clear tracked changes from failed operations - prevents cascade error
+            _context.ChangeTracker.Clear();
+            
             var log = new ProcessLog
             {
                 Timestamp = DateTime.UtcNow,

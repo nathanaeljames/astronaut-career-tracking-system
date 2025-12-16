@@ -39,15 +39,24 @@ namespace StargateAPI.Business.Commands
         // Preprocessor - validation BEFORE processing
         public Task Process(UpdatePerson request, CancellationToken cancellationToken)
         {
-            // CHECK 1: Current person must exist
+            // VALIDATION 1: Check if current name is null/empty
+            if (string.IsNullOrWhiteSpace(request.CurrentName))
+            {
+                throw new BadHttpRequestException("Current name cannot be null or empty");
+            }
+            // VALIDATION 2: Check if new name is null/empty
+            if (string.IsNullOrWhiteSpace(request.NewName))
+            {
+                throw new BadHttpRequestException("New name cannot be null or empty");
+            }
+            // VALIDATION 3: Current person must exist
             var person = _context.People.AsNoTracking().FirstOrDefault(z => z.Name == request.CurrentName);
 
             if (person is null)
             {
                 throw new BadHttpRequestException($"Person with name '{request.CurrentName}' not found", StatusCodes.Status404NotFound);
             }
-
-            // CHECK 2: New name must not already exist (unless it's the same name)
+            // VALIDATION 4: New name must not already exist (unless it's the same name)
             if (request.CurrentName != request.NewName)
             {
                 var existingPerson = _context.People.AsNoTracking().FirstOrDefault(z => z.Name == request.NewName);

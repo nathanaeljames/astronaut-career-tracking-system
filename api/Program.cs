@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using StargateAPI.Business.Commands;
 using StargateAPI.Business.Data;
+using StargateAPI.Business.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,12 +13,14 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<StargateContext>(options => 
     options.UseSqlite(builder.Configuration.GetConnectionString("StarbaseApiDatabase")));
-// ADDED logging service - one instance per HTTP request
+// ADDED register logging service - one instance per HTTP request
 builder.Services.AddScoped<ILoggingService, DatabaseLoggingService>();
 
 builder.Services.AddMediatR(cfg =>
 {
     cfg.AddRequestPreProcessor<CreateAstronautDutyPreProcessor>();
+    // ADDED was missing Create Person preprocessor
+    cfg.AddRequestPreProcessor<CreatePersonPreProcessor>();
     // ADDED new endpoint for Person update
     cfg.AddRequestPreProcessor<UpdatePersonPreProcessor>();
     cfg.RegisterServicesFromAssemblies(typeof(Program).Assembly);
