@@ -43,4 +43,7 @@ app.MapControllers();
 
 app.Run();
 
+//make program accessible for testing
+public partial class Program { }
+
 
