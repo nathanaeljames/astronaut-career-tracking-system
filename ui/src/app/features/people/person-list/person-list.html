@@ -1,0 +1,64 @@
+<div class="person-list-container">
+    <h2>People Management</h2>
+
+    <div class="row">
+        <!-- Create Person -->
+        <div class="col-lg-6 mb-4">
+            <app-person-create (personCreated)="loadPeople()"></app-person-create>
+        </div>
+
+        <!-- Update Person -->
+        <div class="col-lg-6 mb-4">
+            <app-person-update (personUpdated)="onPersonUpdated()"></app-person-update> <!-- ADD (personUpdated) -->
+        </div>
+    </div>
+
+    <!-- People List -->
+    <div class="card">
+        <div class="card-header bg-secondary text-white">
+            <h4 class="mb-0">All People</h4>
+        </div>
+        <div class="card-body">
+            <div *ngIf="loading" class="text-center py-4">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-2">Loading people...</p>
+            </div>
+
+            <div *ngIf="error" class="alert alert-danger">
+                <strong>Error:</strong> {{ error }}
+            </div>
+
+            <div *ngIf="!loading && !error">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover" *ngIf="people.length > 0">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Current Rank</th>
+                                <th>Current Duty</th>
+                                <th>Career Start</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let person of people">
+                                <td>{{ person.personId }}</td>
+                                <td>{{ person.name || '(No name)' }}</td>
+                                <td>{{ person.currentRank || '-' }}</td>
+                                <td>{{ person.currentDutyTitle || '-' }}</td>
+                                <td>{{ person.careerStartDate ? (person.careerStartDate | date:'shortDate') : '-' }}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div *ngIf="people.length === 0" class="alert alert-info">
+                    <strong>No people found.</strong> Create one above to get started!
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

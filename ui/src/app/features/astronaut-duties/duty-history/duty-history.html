@@ -1,0 +1,60 @@
+<div class="card">
+    <div class="card-header bg-info text-white">
+        <h4 class="mb-0">View Astronaut Duty History</h4>
+    </div>
+    <div class="card-body">
+        <div class="mb-4">
+            <label for="personSelect" class="form-label">Select Astronaut</label>
+            <select class="form-select" id="personSelect" [(ngModel)]="selectedPersonName"
+                (ngModelChange)="onPersonSelected()" [disabled]="loadingPeople">
+                <option value="">-- Select a person --</option>
+                <option *ngFor="let person of people" [value]="person.name">
+                    {{ person.name || '(No name - ID: ' + person.personId + ')' }}
+                </option>
+            </select>
+        </div>
+
+        <div *ngIf="loadingDuties" class="text-center py-4">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-2">Loading duty history...</p>
+        </div>
+
+        <div *ngIf="error" class="alert alert-danger">
+            <strong>Error:</strong> {{ error }}
+        </div>
+
+        <div *ngIf="!loadingDuties && person && !error">
+            <div class="alert alert-secondary mb-3">
+                <h5 class="mb-0">{{ person.name }}</h5>
+                <small class="text-muted">Person ID: {{ person.id }}</small>
+            </div>
+
+            <div *ngIf="duties.length === 0" class="alert alert-info">
+                No duty assignments found for this astronaut.
+            </div>
+
+            <div *ngIf="duties.length > 0" class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Duty Title</th>
+                            <th>Start Date</th>
+                            <th>End Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let duty of duties">
+                            <td>{{ duty.rank }}</td>
+                            <td>{{ duty.dutyTitle }}</td>
+                            <td>{{ formatDate(duty.dutyStartDate) }}</td>
+                            <td>{{ formatDate(duty.dutyEndDate) }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

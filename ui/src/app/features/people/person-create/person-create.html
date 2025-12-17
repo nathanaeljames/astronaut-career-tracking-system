@@ -1,0 +1,30 @@
+<div class="card mb-4">
+    <div class="card-header bg-primary text-white">
+        <h4 class="mb-0">Create New Person</h4>
+    </div>
+    <div class="card-body">
+        <form (ngSubmit)="onSubmit()">
+            <div class="mb-3">
+                <label for="personName" class="form-label">Name *</label>
+                <input type="text" class="form-control" id="personName" [(ngModel)]="personName" name="personName"
+                    placeholder="Enter person's full name" [disabled]="loading" required>
+            </div>
+
+            <div *ngIf="error" class="alert alert-danger" role="alert">
+                <strong>Error:</strong> {{ error }}
+            </div>
+
+            <div *ngIf="success" class="alert alert-success" role="alert">
+                <strong>Success!</strong> {{ success }}
+            </div>
+
+            <button type="submit" class="btn btn-primary" [disabled]="loading || !personName.trim()">
+                <span *ngIf="loading">
+                    <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                    Creating...
+                </span>
+                <span *ngIf="!loading">Create Person</span>
+            </button>
+        </form>
+    </div>
+</div>

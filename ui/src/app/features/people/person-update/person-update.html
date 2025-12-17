@@ -1,0 +1,46 @@
+<div class="card">
+    <div class="card-header bg-warning text-dark">
+        <h4 class="mb-0">Update Person Name</h4>
+    </div>
+    <div class="card-body">
+        <form (ngSubmit)="onSubmit()">
+            <div class="mb-3">
+                <label for="personSelect" class="form-label">Select Person *</label>
+                <select class="form-select" id="personSelect" [(ngModel)]="selectedPersonName"
+                    (ngModelChange)="onPersonSelected()" name="personSelect" [disabled]="loading || loadingPeople"
+                    required>
+                    <option value="">-- Select a person to update --</option>
+                    <option *ngFor="let person of people" [value]="person.name">
+                        {{ person.name || '(No name - ID: ' + person.personId + ')' }}
+                    </option>
+                </select>
+            </div>
+
+            <div class="mb-3" *ngIf="selectedPersonName">
+                <label for="newName" class="form-label">New Name *</label>
+                <input type="text" class="form-control" id="newName" [(ngModel)]="newName" name="newName"
+                    placeholder="Enter new name" [disabled]="loading" required>
+                <small class="form-text text-muted">
+                    Current name: <strong>{{ selectedPersonName }}</strong>
+                </small>
+            </div>
+
+            <div *ngIf="error" class="alert alert-danger" role="alert">
+                <strong>Error:</strong> {{ error }}
+            </div>
+
+            <div *ngIf="success" class="alert alert-success" role="alert">
+                <strong>Success!</strong> {{ success }}
+            </div>
+
+            <button type="submit" class="btn btn-warning"
+                [disabled]="loading || !selectedPersonName || !newName || newName === selectedPersonName">
+                <span *ngIf="loading">
+                    <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                    Updating...
+                </span>
+                <span *ngIf="!loading">Update Person Name</span>
+            </button>
+        </form>
+    </div>
+</div>
