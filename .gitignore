@@ -18,6 +18,17 @@ obj/
 *.user
 *.suo
 
+# Coverage reports (generated files)
+CoverageReport/
+CoverageReport-Total/
+CoverageReport-UnitTests/
+TestResults/
+
+# SQLite database (local only)
+starbase.db
+starbase.db-shm
+starbase.db-wal
+
 # macOS
 .DS_Store
 
@@ -29,3 +40,5 @@ dist/
 # Environment files
 *.env
 appsettings.Development.json
+
+
