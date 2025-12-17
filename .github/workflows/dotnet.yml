@@ -5,16 +5,17 @@ on:
     branches: [ main, master ]
   pull_request:
     branches: [ main, master ]
+  workflow_dispatch:  # Allows manual triggering
 
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
     
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4  # Updated to v4
     
     - name: Setup .NET
-      uses: actions/setup-dotnet@v3
+      uses: actions/setup-dotnet@v4  # Updated to v4
       with:
         dotnet-version: 8.0.x
     
@@ -36,7 +37,7 @@ jobs:
         classfilters: '-StargateAPI.Migrations.*;-StargateAPI.Program'
     
     - name: Upload Coverage Report
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4  # Changed from v3 to v4
       with:
         name: coverage-report
         path: CoverageReport/
