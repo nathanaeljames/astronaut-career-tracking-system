@@ -136,14 +136,25 @@ npm start
 - Framework: XUnit with FluentAssertions
 - Database: SQLite in-memory for test isolation
 
-### Running Tests
+### Running All Tests
 ```bash
-# Run all tests
 dotnet test
+```
 
-# Run with coverage
+## Running Tests with Coverage
+
+### Linux/Mac
+```bash
 ./generate-coverage.sh
 ```
+
+### Windows
+```powershell
+.\generate-coverage.ps1
+```
+
+**Note:** The `reportgenerator` tool must be installed first:
+`dotnet tool install -g dotnet-reportgenerator-globaltool`
 
 ## Key Achievements
 1. All 7 business rules verified with tests
