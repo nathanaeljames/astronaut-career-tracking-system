@@ -141,20 +141,15 @@ npm start
 dotnet test
 ```
 
-## Running Tests with Coverage
-
-### Linux/Mac
+### Linux/Mac - Running Tests with Coverage
 ```bash
 ./generate-coverage.sh
 ```
 
-### Windows
+### Windows - Running Tests with Coverage
 ```powershell
 .\generate-coverage.ps1
 ```
-
-**Note:** The `reportgenerator` tool must be installed first:
-`dotnet tool install -g dotnet-reportgenerator-globaltool`
 
 ## Key Achievements
 1. All 7 business rules verified with tests
